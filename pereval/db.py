@@ -2,15 +2,18 @@ import json
 import psycopg2
 from psycopg2 import sql
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 class DataHandler:
     def __init__(self):
         self.conn = psycopg2.connect(
-            dbname=os.environ.get('FSTR_DB_NAME', 'pereval'),
-            user=os.environ.get('FSTR_DB_LOGIN'),
-            password=os.environ.get('FSTR_DB_PASS'),
-            host=os.environ.get('FSTR_DB_HOST', 'localhost'),
-            port=os.environ.get('FSTR_DB_PORT', '5432')
+            dbname=os.getenv('FSTR_DB_NAME'),
+            user=os.getenv('FSTR_DB_LOGIN'),
+            password=os.getenv('FSTR_DB_PASS'),
+            host=os.getenv('FSTR_DB_HOST'),
+            port=os.getenv('FSTR_DB_PORT')
         )
         self.cursor = self.conn.cursor()
 
@@ -39,7 +42,33 @@ class DataHandler:
 # Пример использования:
 if __name__ == "__main__":
     db = DataHandler()
-    data = {...}  # Данные о перевале в формате JSON
+    data = {"beauty_title": "пер. ",
+    "title": "Пхия",
+    "other_titles": "Триев",
+    "connect": "",
+    "add_time": "2021-09-22 13:18:13",
+    "user": {
+        "email": "user@email.tld",
+        "phone": "79031234567",
+        "fam": "Пупкин",
+        "name": "Василий",
+        "otc": "Иванович"
+    },
+    "coords": {
+        "latitude": "45.3842",
+        "longitude": "7.1525",
+        "height": "1200"
+    },
+    "level": {
+        "winter": "",
+        "summer": "1А",
+        "autumn": "1А",
+        "spring": ""
+    },
+    "images": [
+        {"id": 1, "title": "Седловина"},
+        {"id": 2, "title": "Подъем"}
+    ]}  # Данные о перевале в формате JSON
     inserted_id = db.addPereval(data)
     print("Inserted ID:", inserted_id)
     db.close()
