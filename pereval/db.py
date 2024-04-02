@@ -3,6 +3,9 @@ import psycopg2
 from psycopg2 import sql
 import os
 from dotenv import load_dotenv
+from fastapi import FastAPI, HTTPException, Body
+from pydantic import BaseModel
+import requests
 
 load_dotenv()
 
@@ -65,10 +68,10 @@ if __name__ == "__main__":
         "autumn": "1А",
         "spring": ""
     },
-    "images": [
-        {"id": 1, "title": "Седловина"},
-        {"id": 2, "title": "Подъем"}
-    ]}  # Данные о перевале в формате JSON
+    "images": [{'data':"<картинка1>", 'title':"Седловина"}, {'data':"<картинка>", 'title':"Подъём"}]}  # Данные о перевале в формате JSON
     inserted_id = db.addPereval(data)
     print("Inserted ID:", inserted_id)
     db.close()
+
+
+
