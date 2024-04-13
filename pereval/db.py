@@ -18,19 +18,21 @@ class DataHandler:
         )
         self.cursor = self.conn.cursor()
 
-    def addPereval(self, data):
+    def addPereval(self, raw_data, images):
         try:
             # Преобразование данных в JSON
-            raw_data = json.dumps(data)
+            raw_data = json.dumps(raw_data)
+            images = json.dumps(images)
             # SQL запрос для добавления данных о перевале
             query = sql.SQL(
-                "INSERT INTO pereval_added (date_added, raw_data, status) VALUES (NOW(), %s, 'new') RETURNING id;")
-            self.cursor.execute(query, [raw_data])
+                "INSERT INTO pereval_added (date_added, raw_data, images, status) VALUES (NOW(), %s, %s, 'new') RETURNING id;"
+            )
+            self.cursor.execute(query, [raw_data, images])
             # Получение ID вставленной записи
-            inserted_id = self.cursor.fetchone()[0]
+            pereval_id = self.cursor.fetchone()[0]
             # Подтверждение изменений в базе данных
             self.conn.commit()
-            return inserted_id
+            return pereval_id
         except Exception as e:
             # Откат изменений в случае ошибки
             self.conn.rollback()
@@ -45,31 +47,35 @@ class DataHandler:
 # Пример использования:
 if __name__ == "__main__":
     db = DataHandler()
-    data = {"beauty_title": "пер. ",
-            "title": "Пхия",
-            "other_titles": "Триев",
-            "connect": "",
-            "add_time": "2021-09-22 13:18:13",
-            "user": {
-                "email": "user@email.tld",
-                "phone": "79031234567",
-                "fam": "Пупкин",
-                "name": "Василий",
-                "otc": "Иванович"
-            },
-            "coords": {
-                "latitude": "45.3842",
-                "longitude": "7.1525",
-                "height": "1200"
-            },
-            "level": {
-                "winter": "",
-                "summer": "1А",
-                "autumn": "1А",
-                "spring": ""
-            },
-            "images": [{'data': "<картинка1>", 'title': "Седловина"},
-                       {'data': "<картинка>", 'title': "Подъём"}]}  # Данные о перевале в формате JSON
-    inserted_id = db.addPereval(data)
-    print("Inserted ID:", inserted_id)
+    raw_data = {
+        "beauty_title": "per. ",
+        "title": "name",
+        "other_titles": "name2",
+        "connect": "con",
+        "coords": {
+            "latitude": "55.1234",
+            "longitude": "37.5678",
+            "height": "1500"
+        },
+        "level": {
+            "winter": "",
+            "summer": "1А",
+            "autumn": "1А",
+            "spring": ""
+        }
+    }
+    images = ({'data': "<1>", 'title': "sed"},
+              {'data': "<2>", 'title': "pod"})
+
+    # email = {"email": "example@mail.com"}
+    # fam = {"fam": "Ivanov"}
+    # name = {"name": "Ivan"}
+    # otc = {"otc": "Ivanovich"}
+    # phone = {"phone": "+71234567890"}
+
+    # Данные о перевале в формате JSON
+    pereval_id = db.addPereval(raw_data, images)
+
+    print("pereval ID:", pereval_id)
+
     db.close()
