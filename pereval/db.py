@@ -39,6 +39,28 @@ class DataHandler:
             print("Error:", e)
             return None
 
+    def addUser(self, email, fam, name, otc, phone):
+        try:
+            email = json.dumps(email)
+            fam = json.dumps(fam)
+            name = json.dumps(name)
+            otc = json.dumps(otc)
+            phone = json.dumps(phone)
+            user_query = sql.SQL(
+                "INSERT INTO users (email, fam, name, otc, phone) VALUES (%s, %s, %s, %s, %s) RETURNING id;"
+            )
+            self.cursor.execute(user_query, [email, fam, name, otc, phone])
+            # Получение ID вставленной записи
+            user_id = self.cursor.fetchone()[0]
+            # Подтверждение изменений в базе данных
+            self.conn.commit()
+            return user_id
+        except Exception as e:
+            # Откат изменений в случае ошибки
+            self.conn.rollback()
+            print("Error:", e)
+            return None
+
     def close(self):
         self.cursor.close()
         self.conn.close()
@@ -67,15 +89,15 @@ if __name__ == "__main__":
     images = ({'data': "<1>", 'title': "sed"},
               {'data': "<2>", 'title': "pod"})
 
-    # email = {"email": "example@mail.com"}
-    # fam = {"fam": "Ivanov"}
-    # name = {"name": "Ivan"}
-    # otc = {"otc": "Ivanovich"}
-    # phone = {"phone": "+71234567890"}
+    email = {"email": "examplesrg@mail.com"}
+    fam = {"fam": "Ivanov"}
+    name = {"name": "Ivan"}
+    otc = {"otc": "Ivanovich"}
+    phone = {"phone": "+71234567890"}
 
     # Данные о перевале в формате JSON
     pereval_id = db.addPereval(raw_data, images)
-
+    user_id = db.addUser(email['email'], fam['fam'], name['name'], otc['otc'], phone['phone'])
     print("pereval ID:", pereval_id)
-
+    print("user ID:", user_id)
     db.close()
