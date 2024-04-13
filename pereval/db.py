@@ -61,6 +61,27 @@ class DataHandler:
             print("Error:", e)
             return None
 
+    def editPereval(self, data):
+        if data['status'] == 'new':
+            # Подготавливаем SQL-запрос для обновления данных
+            update_query = """
+                        UPDATE pereval_added
+                        SET raw_data = %s
+                        WHERE id = %s
+                    """
+            try:
+                # Выполняем запрос, передавая новые данные и ID объекта
+                self.cursor.execute(update_query, (data['raw_data'], data['id']))
+                self.conn.commit()
+                return {'status': 200, 'message': 'Data updated successfully'}
+            except psycopg.Error as e:
+                # Обрабатываем ошибку при выполнении запроса
+                error_message = f"Error updating data: {e}"
+                return {'status': 500, 'message': error_message}
+        else:
+            # Если статус объекта не "new", возвращаем ошибку
+            return {'status': 400, 'message': 'Cannot update data for non-new object'}
+
     def close(self):
         self.cursor.close()
         self.conn.close()
