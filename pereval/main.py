@@ -51,5 +51,21 @@ def get_submitData(id):
     return {'date_added': date_added, "raw_data": raw_data, "images": images, 'status': status}
 
 
+@app.route("/submitData/<int:id>", methods=["PATCH"])
+def update_data(id):
+    try:
+        data = request.json
+        # Проверяем, что запись с данным id существует и имеет статус "new"
+        existing_data = data_handler.get_data_by_id(id)
+        if existing_data and existing_data['status'] != 'new':
+            # Обновляем данные записи, кроме полей ФИО, адреса почты и номера телефона
+            data_handler.update_data(id, data)
+            return jsonify({"state": 1, "message": "Record updated successfully"}), 200
+        else:
+            return jsonify({"state": 0, "message": "Record not found or cannot be updated"}), 404
+    except Exception as e:
+        return jsonify({"state": 0, "message": str(e)}), 500
+
+
 if __name__ == "__main__":
     app.run(debug=True, port=5000, host="127.0.0.1")
