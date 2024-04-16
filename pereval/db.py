@@ -61,26 +61,43 @@ class DataHandler:
             print("Error:", e)
             return None
 
-    def editPereval(self, data):
-        if data['status'] == 'new':
-            # Подготавливаем SQL-запрос для обновления данных
-            update_query = """
-                        UPDATE pereval_added
-                        SET raw_data = %s
-                        WHERE id = %s
-                    """
-            try:
-                # Выполняем запрос, передавая новые данные и ID объекта
-                self.cursor.execute(update_query, (data['raw_data'], data['id']))
-                self.conn.commit()
-                return {'status': 200, 'message': 'Data updated successfully'}
-            except psycopg.Error as e:
-                # Обрабатываем ошибку при выполнении запроса
-                error_message = f"Error updating data: {e}"
-                return {'status': 500, 'message': error_message}
-        else:
-            # Если статус объекта не "new", возвращаем ошибку
-            return {'status': 400, 'message': 'Cannot update data for non-new object'}
+    def get_data_by_id(self, id):
+        try:
+            # Выполнение SQL-запроса для получения данных о перевале по его ID
+            query = "SELECT * FROM pereval_added WHERE id = %s"
+            self.cursor.execute(query, (id,))
+            data = self.cursor.fetchone()
+            if data:
+                # Преобразование данных в словарь и возврат
+                return {
+                    "id": data[0],
+                    "date_added": data[1],
+                    "raw_data": data[2],
+                    "status": data[3]
+                }
+            else:
+                return None
+        except Exception as e:
+            print("Error:", e)
+            return None
+
+    def update_data(self, id, data):
+        try:
+            # Преобразование данных в JSON
+            raw_data = json.dumps(data)
+            # SQL-запрос для обновления данных о перевале
+            query = "UPDATE pereval_added SET raw_data = %s WHERE id = %s AND status = 'new'"
+            self.cursor.execute(query, (raw_data, id))
+            # Получение количества обновленных строк
+            rows_updated = self.cursor.rowcount
+            # Подтверждение изменений в базе данных
+            self.conn.commit()
+            return rows_updated > 0
+        except Exception as e:
+            # Откат изменений в случае ошибки
+            self.conn.rollback()
+            print("Error:", e)
+            return False
 
     def close(self):
         self.cursor.close()
