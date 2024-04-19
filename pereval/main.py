@@ -22,12 +22,13 @@ def submit_data():
     try:
         raw_data = request.json['raw_data']
         images = request.json['images']
+        user_email = request.json['email']
         email = request.json['email']
         fam = request.json['fam']
         name = request.json['name']
         otc = request.json['otc']
         phone = request.json['phone']
-        if data_handler.addPereval(raw_data, images) and data_handler.addUser(email, fam, name, otc, phone):
+        if data_handler.addPereval(raw_data, images, user_email) and data_handler.addUser(email, fam, name, otc, phone):
             # if data_handler.addUser(email, fam, name, otc, phone):
             return jsonify({"status": 200, "message": "Data submitted successfully"}), 200
         else:
@@ -49,6 +50,15 @@ def get_submitData(id):
             cursor.execute(PEREVAL_STATUS, (id,))
             status = cursor.fetchall()[0]
     return {'date_added': date_added, "raw_data": raw_data, "images": images, 'status': status}
+
+
+@app.route('/submitData/<string:user_email>', methods=['GET'])
+def get_submitData_email(user_email):
+    with connection:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT * FROM pereval_added WHERE user_email = (%s);", (user_email,))
+            data = cursor.fetchall()
+    return {'data': data}
 
 
 @app.route("/submitData/<int:id>", methods=["PATCH"])

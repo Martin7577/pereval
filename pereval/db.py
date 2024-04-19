@@ -18,16 +18,16 @@ class DataHandler:
         )
         self.cursor = self.conn.cursor()
 
-    def addPereval(self, raw_data, images):
+    def addPereval(self,  raw_data, images, user_email):
         try:
             # Преобразование данных в JSON
             raw_data = json.dumps(raw_data)
             images = json.dumps(images)
             # SQL запрос для добавления данных о перевале
             query = sql.SQL(
-                "INSERT INTO pereval_added (date_added, raw_data, images, status) VALUES (NOW(), %s, %s, 'new') RETURNING id;"
+                "INSERT INTO pereval_added (date_added, raw_data, images, status, user_email) VALUES (NOW(), %s, %s, 'new', %s) RETURNING id;"
             )
-            self.cursor.execute(query, [raw_data, images])
+            self.cursor.execute(query, (raw_data, images, user_email))
             # Получение ID вставленной записи
             pereval_id = self.cursor.fetchone()[0]
             # Подтверждение изменений в базе данных
