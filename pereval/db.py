@@ -18,7 +18,7 @@ class DataHandler:
         )
         self.cursor = self.conn.cursor()
 
-    def addPereval(self,  raw_data, images, user_email):
+    def addPereval(self, raw_data, images, user_email):
         try:
             # Преобразование данных в JSON
             raw_data = json.dumps(raw_data)

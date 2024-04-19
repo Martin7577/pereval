@@ -22,6 +22,7 @@ PEREVAL_STATUS = "SELECT status FROM pereval_added WHERE id = (%s);"
 def index():
     return jsonify({"message": "Welcome to my API"})
 
+
 @app.route("/submitData", methods=["POST"])
 def submit_data():
     try:
@@ -80,6 +81,7 @@ def update_data(id):
             return jsonify({"state": 0, "message": "Record not found or cannot be updated"}), 404
     except Exception as e:
         return jsonify({"state": 0, "message": str(e)}), 500
+
 
 SWAGGER_URL = '/swagger'
 API_URL = '/static/swagger.json'  # Ссылка на ваш JSON-файл с описанием API
