@@ -1,0 +1,221 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Pereval REST API",
+    "version": "1.0.0",
+    "description": "Документация к REST API для проекта https://pereval.online/"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5000"
+    }
+  ],
+  "paths": {
+    "/submitData": {
+      "post": {
+        "summary": "Submit data to the server",
+        "description": "Endpoint for submitting data to the server",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmitDataRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Data submitted successfully"
+          },
+          "500": {
+            "description": "Error submitting data"
+          }
+        }
+      }
+    },
+    "/submitData/{id}": {
+      "get": {
+        "summary": "Get data submission by ID",
+        "description": "Endpoint to retrieve data submission by its ID",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "description": "ID of the data submission to retrieve",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataSubmission"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Data submission not found"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update data submission by ID",
+        "description": "Endpoint to update an existing data submission by its ID",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "description": "ID of the data submission to update",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmitDataRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Record updated successfully"
+          },
+          "404": {
+            "description": "Record not found or cannot be updated"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/submitData/{user_email}": {
+      "get": {
+        "summary": "Get data submissions by user email",
+        "description": "Endpoint to retrieve data submissions by user email",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "user_email",
+            "required": true,
+            "description": "Email of the user",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DataSubmission"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SubmitDataRequest": {
+        "type": "object",
+        "properties": {
+          "raw_data": {
+            "type": "object",
+            "description": "Raw data for the submission"
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "description": "Image ID"
+                },
+                "title": {
+                  "type": "string",
+                  "description": "Image title"
+                }
+              }
+            }
+          },
+          "email": {
+            "type": "string",
+            "description": "User email"
+          },
+          "fam": {
+            "type": "string",
+            "description": "User's last name"
+          },
+          "name": {
+            "type": "string",
+            "description": "User's first name"
+          },
+          "otc": {
+            "type": "string",
+            "description": "User's patronymic name"
+          },
+          "phone": {
+            "type": "string",
+            "description": "User's phone number"
+          }
+        }
+      },
+      "DataSubmission": {
+        "type": "object",
+        "properties": {
+          "date_added": {
+            "type": "string",
+            "description": "Date when the submission was added"
+          },
+          "raw_data": {
+            "type": "object",
+            "description": "Raw data for the submission"
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "description": "Image ID"
+                },
+                "title": {
+                  "type": "string",
+                  "description": "Image title"
+                }
+              }
+            }
+          },
+          "status": {
+            "type": "string",
+            "description": "Submission status"
+          }
+        }
+      }
+    }
+  }
+}

@@ -4,6 +4,7 @@ import psycopg
 from flask import Flask, request, jsonify
 from db import DataHandler
 from dotenv import load_dotenv
+from flask_swagger_ui import get_swaggerui_blueprint
 
 load_dotenv()
 app = Flask(__name__)
@@ -16,6 +17,10 @@ PEREVAL_RAW_DATA = "SELECT raw_data FROM pereval_added WHERE id = (%s);"
 PEREVAL_IMAGES = "SELECT images FROM pereval_added WHERE id = (%s);"
 PEREVAL_STATUS = "SELECT status FROM pereval_added WHERE id = (%s);"
 
+
+@app.route('/')
+def index():
+    return jsonify({"message": "Welcome to my API"})
 
 @app.route("/submitData", methods=["POST"])
 def submit_data():
@@ -76,6 +81,19 @@ def update_data(id):
     except Exception as e:
         return jsonify({"state": 0, "message": str(e)}), 500
 
+SWAGGER_URL = '/swagger'
+API_URL = '/static/swagger.json'  # Ссылка на ваш JSON-файл с описанием API
+
+swaggerui_blueprint = get_swaggerui_blueprint(
+    SWAGGER_URL,
+    API_URL,
+    config={
+        'app_name': "My Flask API"  # Название вашего приложения
+    }
+)
+
+# Регистрация маршрута Swagger UI
+app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000, host="127.0.0.1")
