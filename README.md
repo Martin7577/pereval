@@ -25,7 +25,7 @@
 
 <h3>3. Получение данных о перевалах по email пользователя</h3>
 <p><strong>Метод:</strong> GET</p>
-<p><strong>Путь:</strong> /submitData/?user__email={email}</p>
+<p><strong>Путь:</strong> /submitData/<string:user_email></p>
 <p>Этот метод позволяет получить список данных обо всех объектах, которые пользователь с указанным email отправил на сервер.</p>
 <p><strong>Ответ:</strong> Список данных о перевалах в формате JSON</p>
 
